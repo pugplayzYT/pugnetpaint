@@ -1,0 +1,89 @@
+﻿<Window x:Class="PugNetPaint.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PugNetPaint"
+        mc:Ignorable="d"
+        Title="Pug.net Paint" Height="600" Width="900"
+        Icon="icon.png"
+        KeyDown="Window_KeyDown"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Background="#1e1e1e">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Toolbar with Glassmorphism-ish feel -->
+        <Border Background="#2d2d2d" Padding="15" BorderBrush="#404040" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                
+                <!-- Colors Group -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="PALETTE" Foreground="#aaaaaa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Button Background="Blue" Width="30" Height="30" Click="Color_Click" Tag="Blue" Margin="2" BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="15" BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Background="Green" Width="30" Height="30" Click="Color_Click" Tag="Green" Margin="2" BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="15" BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Background="Red" Width="30" Height="30" Click="Color_Click" Tag="Red" Margin="2" BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="15" BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Background="Orange" Width="30" Height="30" Click="Color_Click" Tag="Orange" Margin="2" BorderThickness="0">
+                         <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="15" BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+
+                <Separator Width="30" Background="Transparent"/>
+
+                <!-- Brush Size Group -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="BRUSH" Foreground="#aaaaaa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Slider Name="SizeSlider" Minimum="1" Maximum="10" Value="2" Width="120" VerticalAlignment="Center" ValueChanged="Size_Changed" IsSnapToTickEnabled="True" TickFrequency="1"/>
+                    <TextBlock Text="{Binding ElementName=SizeSlider, Path=Value}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0" Width="20"/>
+                </StackPanel>
+
+                <Separator Width="30" Background="Transparent"/>
+
+                <!-- Tools Group -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="UNDO" Click="Undo_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                       <Button.Resources>
+                           <Style TargetType="Border">
+                               <Setter Property="CornerRadius" Value="5"/>
+                           </Style>
+                       </Button.Resources>
+                    </Button>
+                    <Button Content="SAVE" Click="Save_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    <Button Content="OPEN" Click="Open_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    <Button Content="PRINT" Click="Print_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+
+        <!-- Canvas Area -->
+        <Border Grid.Row="1" Margin="20" Background="#ffffff" CornerRadius="10" Effect="{DynamicResource {x:Static SystemParameters.DropShadowKey}}">
+             <InkCanvas Name="MyCanvas" Background="Transparent"/>
+        </Border>
+    </Grid>
+</Window>
