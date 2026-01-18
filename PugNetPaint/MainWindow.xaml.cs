@@ -23,6 +23,12 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        try
+        {
+            this.Icon = new BitmapImage(new Uri("pack://application:,,,/icon.png"));
+        }
+        catch { }
+
         // Default settings
         if (MyCanvas != null)
         {
@@ -65,6 +71,93 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Clear_Click(object sender, RoutedEventArgs e)
+    {
+        if (MessageBox.Show("Nuke everything?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+        {
+            MyCanvas.Strokes.Clear();
+            MyCanvas.Background = Brushes.Transparent;
+        }
+    }
+
+    private void SaveBtn_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.ContextMenu != null)
+        {
+            btn.ContextMenu.PlacementTarget = btn;
+            btn.ContextMenu.IsOpen = true;
+        }
+    }
+
+    private void SaveProject_Click(object sender, RoutedEventArgs e)
+    {
+        SaveWithWarning("isf");
+    }
+
+    private void ExportPng_Click(object sender, RoutedEventArgs e)
+    {
+        SaveWithWarning("png");
+    }
+
+    private void ExportJpg_Click(object sender, RoutedEventArgs e)
+    {
+        SaveWithWarning("jpg");
+    }
+
+    private void SaveWithWarning(string format)
+    {
+        if (format != "isf")
+        {
+            string msg = "WARNING: Exporting as an image (" + format.ToUpper() + ") will flatten everything.\n" +
+                         "You will NOT be able to undo strokes or move them if you open this file later.\n\n" +
+                         "Use 'Save Project (.isf)' if you want to keep your layers editable.\n\n" +
+                         "Continue?";
+
+            if (MessageBox.Show(msg, "Wait a sec", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+        }
+
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        if (format == "isf") saveFileDialog.Filter = "Ink Serialized Format (*.isf)|*.isf";
+        else if (format == "png") saveFileDialog.Filter = "PNG Image (*.png)|*.png";
+        else if (format == "jpg") saveFileDialog.Filter = "JPEG Image (*.jpg)|*.jpg";
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
+            {
+                if (format == "isf")
+                {
+                    MyCanvas.Strokes.Save(fs);
+                }
+                else
+                {
+                    // Render the canvas to a bitmap
+                    Rect bounds = VisualTreeHelper.GetDescendantBounds(MyCanvas);
+                    double dpi = 96d;
+                    RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+
+                    DrawingVisual dv = new DrawingVisual();
+                    using (DrawingContext dc = dv.RenderOpen())
+                    {
+                        VisualBrush vb = new VisualBrush(MyCanvas);
+                        dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+                    }
+                    rtb.Render(dv);
+
+                    BitmapEncoder encoder = null;
+                    if (format == "png") encoder = new PngBitmapEncoder();
+                    else encoder = new JpegBitmapEncoder();
+
+                    encoder.Frames.Add(BitmapFrame.Create(rtb));
+                    encoder.Save(fs);
+                }
+            }
+        }
+    }
+
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -81,15 +174,29 @@ public partial class MainWindow : Window
     private void Open_Click(object sender, RoutedEventArgs e)
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
-        openFileDialog.Filter = "Ink Serialized Format (*.isf)|*.isf";
+        openFileDialog.Filter = "Images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg|Ink Serialized Format (*.isf)|*.isf";
+
         if (openFileDialog.ShowDialog() == true)
         {
             try
             {
-                using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open))
+                string file = openFileDialog.FileName;
+                if (file.EndsWith(".isf"))
                 {
-                    StrokeCollection strokes = new StrokeCollection(fs);
-                    MyCanvas.Strokes = strokes;
+                    // ISF is for nerd vector data (editable strokes)
+                    using (FileStream fs = new FileStream(file, FileMode.Open))
+                    {
+                        StrokeCollection strokes = new StrokeCollection(fs);
+                        MyCanvas.Strokes = strokes;
+                    }
+                }
+                else
+                {
+                    // Normal human images
+                    ImageBrush img = new ImageBrush();
+                    img.ImageSource = new BitmapImage(new Uri(file, UriKind.Absolute));
+                    img.Stretch = Stretch.Uniform;
+                    MyCanvas.Background = img;
                 }
             }
             catch (Exception ex)
@@ -112,7 +219,7 @@ public partial class MainWindow : Window
     {
         if (e.Key == Key.Z && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
         {
-            Undo_Click(null, null);
+            Undo_Click(sender, new RoutedEventArgs());
         }
     }
 }

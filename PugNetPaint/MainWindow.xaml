@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:PugNetPaint"
         mc:Ignorable="d"
         Title="Pug.net Paint" Height="600" Width="900"
-        Icon="icon.png"
         KeyDown="Window_KeyDown"
         WindowStartupLocation="CenterScreen">
     
@@ -73,7 +72,19 @@
                            </Style>
                        </Button.Resources>
                     </Button>
-                    <Button Content="SAVE" Click="Save_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    <Button Content="CLEAR" Click="Clear_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    
+                    <Button Content="SAVE" Name="SaveBtn" Click="SaveBtn_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Save Project (.isf) - Editable" Click="SaveProject_Click"/>
+                                <Separator/>
+                                <MenuItem Header="Export as PNG" Click="ExportPng_Click"/>
+                                <MenuItem Header="Export as JPG" Click="ExportJpg_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+
                     <Button Content="OPEN" Click="Open_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     <Button Content="PRINT" Click="Print_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                 </StackPanel>
@@ -82,7 +93,10 @@
         </Border>
 
         <!-- Canvas Area -->
-        <Border Grid.Row="1" Margin="20" Background="#ffffff" CornerRadius="10" Effect="{DynamicResource {x:Static SystemParameters.DropShadowKey}}">
+        <Border Grid.Row="1" Margin="20" Background="#ffffff" CornerRadius="10">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Direction="320" ShadowDepth="5" Opacity="0.5" BlurRadius="10"/>
+            </Border.Effect>
              <InkCanvas Name="MyCanvas" Background="Transparent"/>
         </Border>
     </Grid>
