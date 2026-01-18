@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using System.Windows.Controls.Primitives;
 
 namespace PugNetPaint;
 
@@ -30,7 +31,83 @@ public partial class MainWindow : Window
             MyCanvas.DefaultDrawingAttributes.Color = Colors.Blue;
             MyCanvas.DefaultDrawingAttributes.Width = 2;
             MyCanvas.DefaultDrawingAttributes.Height = 2;
+            MyCanvas.StrokeCollected += MyCanvas_StrokeCollected;
         }
+    }
+
+    private void MyCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+    {
+        if (SnapToggle.IsChecked == true)
+        {
+            ApplySnapping(e.Stroke);
+        }
+    }
+
+    private void ApplySnapping(Stroke newStroke)
+    {
+        // 1. Get Start and End Points of the new stroke
+        // We clone the points to a new collection to ensure UI updates when we re-assign
+        StylusPointCollection modifiedPoints = new StylusPointCollection(newStroke.StylusPoints);
+
+        StylusPoint startPoint = modifiedPoints[0];
+        StylusPoint endPoint = modifiedPoints[modifiedPoints.Count - 1];
+
+        // 2. Define Threshold (Snap Distance) - from Slider
+        double threshold = SnapSlider.Value;
+
+        StylusPoint? bestStartMatch = null;
+        StylusPoint? bestEndMatch = null;
+        double minStartDist = threshold;
+        double minEndDist = threshold;
+
+        // 3. Iterate through all other strokes to find closest points
+        foreach (Stroke s in MyCanvas.Strokes)
+        {
+            if (s == newStroke) continue; // Don't snap to self
+
+            if (s.StylusPoints.Count == 0) continue;
+
+            // Check against start/end of other strokes (End-to-End Snapping)
+            StylusPoint sStart = s.StylusPoints[0];
+            StylusPoint sEnd = s.StylusPoints[s.StylusPoints.Count - 1];
+
+            // Check Start of New Stroke
+            double dStart1 = GetDistance(startPoint, sStart);
+            if (dStart1 < minStartDist) { minStartDist = dStart1; bestStartMatch = sStart; }
+
+            double dStart2 = GetDistance(startPoint, sEnd);
+            if (dStart2 < minStartDist) { minStartDist = dStart2; bestStartMatch = sEnd; }
+
+            // Check End of New Stroke
+            double dEnd1 = GetDistance(endPoint, sStart);
+            if (dEnd1 < minEndDist) { minEndDist = dEnd1; bestEndMatch = sStart; }
+
+            double dEnd2 = GetDistance(endPoint, sEnd);
+            if (dEnd2 < minEndDist) { minEndDist = dEnd2; bestEndMatch = sEnd; }
+        }
+
+        // 4. Update Points if Match Found
+        bool changed = false;
+        if (bestStartMatch.HasValue)
+        {
+            modifiedPoints[0] = bestStartMatch.Value;
+            changed = true;
+        }
+        if (bestEndMatch.HasValue)
+        {
+            modifiedPoints[modifiedPoints.Count - 1] = bestEndMatch.Value;
+            changed = true;
+        }
+
+        if (changed)
+        {
+            newStroke.StylusPoints = modifiedPoints;
+        }
+    }
+
+    private double GetDistance(StylusPoint p1, StylusPoint p2)
+    {
+        return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
     }
 
     private void Color_Click(object sender, RoutedEventArgs e)

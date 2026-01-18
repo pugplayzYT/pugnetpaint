@@ -8,6 +8,7 @@
         Title="Pug.net Paint" Height="600" Width="900"
         KeyDown="Window_KeyDown"
         Icon="icon.ico"
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
     
     <Grid Background="#1e1e1e">
@@ -66,6 +67,18 @@
 
                 <!-- Tools Group -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ToggleButton Content="SNAP" Name="SnapToggle" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                         <ToggleButton.Resources>
+                           <Style TargetType="Border">
+                               <Setter Property="CornerRadius" Value="5"/>
+                           </Style>
+                       </ToggleButton.Resources>
+                    </ToggleButton>
+                    
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0">
+                         <TextBlock Text="MAGNET" Foreground="#aaaaaa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                         <Slider Name="SnapSlider" Minimum="10" Maximum="200" Value="50" Width="80" VerticalAlignment="Center" ToolTip="Adjust Snap Strength"/>
+                    </StackPanel>
                     <Button Content="UNDO" Click="Undo_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
                        <Button.Resources>
                            <Style TargetType="Border">

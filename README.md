@@ -1,70 +1,55 @@
 # PugNetPaint
 
-**PugNetPaint** is a lightweight, Windows-based digital painting application built using **.NET 10** and **WPF (Windows Presentation Foundation)**. It provides a straightforward interface for freehand drawing with support for native ink serialization and standard image export formats.
+**PugNetPaint** is a modern, lightweight digital painting application built using **.NET 10** and **WPF**. It offers a seamless, high-performance drawing experience with advanced features like smart stroke snapping and native ink serialization.
 
-## 🚀 Features
+## 🚀 Key Features
 
-- **Freehand Drawing**: High-performance, low-latency inking using the WPF InkCanvas.
-- **Color Selection**: Built-in palette supporting primary colors (Blue, Green, Red, Orange) and default Black.
-- **Dynamic Brush Sizing**: Adjustable stroke thickness slider.
-- **Stroke History**: Full Undo capabilities to revert recent actions (`Ctrl + Z` supported).
-- **Project Persistence**:
-  - **Save Project (.isf)**: Saves drawing data in **Ink Serialized Format**, preserving individual strokes for future editing.
-  - **Load Project**: Open previously saved `.isf` files to continue working.
-- **Image Export**:
-  - Export drawings as flattened **PNG** or **JPG** files for sharing.
-  - *Note: Exporting to image formats rasterizes the vector strokes, rendering them non-editable.*
-- **Canvas Management**: One-click functionality to clear the entire workspace.
-- **Printing**: Native support for printing drawings directly from the application.
+### 🎨 Drawing & Editing
+- **High-Fidelity Inking**: Smooth, pressure-sensitive (hardware dependent) freehand drawing.
+- **Smart Snap System**:
+  - **Toggleable Snapping**: Connects lines automatically to create closed shapes.
+  - **Adjustable Magnet Strength**: Use the slider to control how aggressively lines snap to each other (10px - 200px range).
+- **Precision Eraser**: Switch to eraser mode to remove specific stroke segments.
+- **Undo History**: Full `Ctrl+Z` support for stroke management.
+
+### 🛠️ Tools
+- **Dynamic Palette**: Quick access to essential colors (Blue, Green, Red, Orange, Black).
+- **Brush Sizing**: Real-time slider adjustment for stroke thickness.
+- **Canvas Control**: One-click "Clear" functionality to reset the workspace.
+- **Printing**: Native print support for physical output or PDF generation.
+
+### 💾 File Management
+- **Project Persistence (.isf)**: Save your work in **Ink Serialized Format** to maintain stroke data and editability.
+- **Image Export**: Export to **PNG** or **JPG** for sharing (note: rasterizes content).
+
+## 🖥️ User Interface
+- **Modern Dark Theme**: Designed with a sleek, dark-mode aesthetic for reduced eye strain.
+- **Maximized View**: Application opens in full-screen mode for an immersive canvas experience.
+- **Glassmorphism Elements**: Subtle UI touches for a premium feel.
 
 ## 🛠️ Prerequisites
 
-To build and run this application, you need the following installed on your development machine:
+- **OS**: Windows 10/11
+- **Runtime**: [.NET 10.0](https://dotnet.microsoft.com/download)
+- **IDE**: Visual Studio 2022 (for building)
 
-- **OS**: Windows 10 or Windows 11
-- **IDE**: [Visual Studio 2022](https://visualstudio.microsoft.com/) (latest version recommended)
-- **Framework**: [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
-- **Workload**: ".NET Desktop Development" workload installed in Visual Studio.
+## 📥 Build & Install
 
-## 📥 Installation & Build
+### Automated Installer Build
+Run the provided batch file to build the app and generate an MSI installer:
+```powershell
+.\build_installer.bat
+```
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/pugplayzYT/pugnetpaint.git
-   cd pugnetpaint
-   ```
-
-2. **Open the Project**
-   - Navigate to the cloned directory.
-   - Open `PugNetPaint.sln` in Visual Studio 2022.
-
-3. **Build the Solution**
-   - Ensure the solution configuration is set to `Debug` or `Release`.
-   - Press `Ctrl + Shift + B` to build the solution.
-   - Verify that there are no build errors in the "Error List" window.
-
-4. **Run the Application**
-   - Press `F5` to start debugging or `Ctrl + F5` to run without the debugger.
-
-## 📦 Installer (Optional)
-
-The solution includes a `PugNetPaintInstaller` project for generating an MSI installer.
-
-1. Ensure the **WiX Toolset** extension is installed for Visual Studio.
-2. Right-click the `PugNetPaintInstaller` project in the Solution Explorer.
-3. Select **Build**.
-4. The generated `.msi` file will be located in the `bin/Debug` or `bin/Release` folder of the installer project.
+### Manual Build
+1. Open `PugNetPaint.sln` in Visual Studio.
+2. Build solution (`Ctrl+Shift+B`).
+3. Run (`F5`).
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please ensure that you adhere to the existing code style and strictly type your C# code.
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/NewFeature`).
-3. Commit your changes.
-4. Push to the branch.
-5. Open a Pull Request.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📄 License
 
-This project is open-source and available for educational and personal use.
+MIT License.
