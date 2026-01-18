@@ -23,11 +23,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        try
-        {
-            this.Icon = new BitmapImage(new Uri("pack://application:,,,/icon.png"));
-        }
-        catch { }
 
         // Default settings
         if (MyCanvas != null)
@@ -73,7 +68,7 @@ public partial class MainWindow : Window
 
     private void Clear_Click(object sender, RoutedEventArgs e)
     {
-        if (MessageBox.Show("Nuke everything?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+        if (MessageBox.Show("Are you sure you want to clear the canvas? This cannot be undone.", "Clear Canvas", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
         {
             MyCanvas.Strokes.Clear();
             MyCanvas.Background = Brushes.Transparent;
@@ -113,7 +108,7 @@ public partial class MainWindow : Window
                          "Use 'Save Project (.isf)' if you want to keep your layers editable.\n\n" +
                          "Continue?";
 
-            if (MessageBox.Show(msg, "Wait a sec", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            if (MessageBox.Show(msg, "Export Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             {
                 return;
             }
@@ -183,7 +178,7 @@ public partial class MainWindow : Window
                 string file = openFileDialog.FileName;
                 if (file.EndsWith(".isf"))
                 {
-                    // ISF is for nerd vector data (editable strokes)
+                    // ISF format preserves strokes (editable)
                     using (FileStream fs = new FileStream(file, FileMode.Open))
                     {
                         StrokeCollection strokes = new StrokeCollection(fs);
@@ -192,7 +187,7 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    // Normal human images
+                    // Standard image formats
                     ImageBrush img = new ImageBrush();
                     img.ImageSource = new BitmapImage(new Uri(file, UriKind.Absolute));
                     img.Stretch = Stretch.Uniform;

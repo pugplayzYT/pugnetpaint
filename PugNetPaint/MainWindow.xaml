@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Pug.net Paint" Height="600" Width="900"
         KeyDown="Window_KeyDown"
+        Icon="icon.ico"
         WindowStartupLocation="CenterScreen">
     
     <Grid Background="#1e1e1e">
