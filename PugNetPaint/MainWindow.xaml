@@ -73,6 +73,7 @@
                            </Style>
                        </Button.Resources>
                     </Button>
+                    <Button Content="ERASER" Click="Eraser_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     <Button Content="CLEAR" Click="Clear_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     
                     <Button Content="SAVE" Name="SaveBtn" Click="SaveBtn_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">

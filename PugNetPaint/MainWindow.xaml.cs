@@ -46,6 +46,7 @@ public partial class MainWindow : Window
                 case "Orange": color = Colors.Orange; break;
             }
             MyCanvas.DefaultDrawingAttributes.Color = color;
+            MyCanvas.EditingMode = InkCanvasEditingMode.Ink;
         }
     }
 
@@ -64,6 +65,11 @@ public partial class MainWindow : Window
         {
             MyCanvas.Strokes.RemoveAt(MyCanvas.Strokes.Count - 1);
         }
+    }
+
+    private void Eraser_Click(object sender, RoutedEventArgs e)
+    {
+        MyCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
     }
 
     private void Clear_Click(object sender, RoutedEventArgs e)
