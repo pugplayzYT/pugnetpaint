@@ -266,7 +266,42 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    // Standard image formats
+                    // Check if this image has embedded stroke history (experimental feature!)
+                    if (HistoryImageExporter.HasEmbeddedHistory(file))
+                    {
+                        // Ask user what they want to do
+                        var result = MessageBox.Show(
+                            "🎉 This image has embedded stroke history!\n\n" +
+                            "This image was exported with experimental history preservation.\n" +
+                            "Would you like to restore your editable strokes?\n\n" +
+                            "• YES = Restore strokes (you can edit them!)\n" +
+                            "• NO = Load as background image only",
+                            "Embedded History Detected!",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Question
+                        );
+
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            // Try to load the embedded strokes
+                            StrokeCollection? restoredStrokes = HistoryImageExporter.LoadStrokesFromImage(file);
+                            if (restoredStrokes != null)
+                            {
+                                MyCanvas.Strokes = restoredStrokes;
+                                MessageBox.Show("✅ Strokes restored successfully!\n\n" +
+                                               "You can now edit your drawing as if you never exported it!",
+                                               "History Restored!", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+                            else
+                            {
+                                MessageBox.Show("⚠️ Couldn't restore strokes. Loading as background instead.",
+                                               "Partial Success", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                        }
+                    }
+
+                    // Standard image loading - set as background
                     ImageBrush img = new()
                     {
                         ImageSource = new BitmapImage(new Uri(file, UriKind.Absolute)),
@@ -296,6 +331,111 @@ public partial class MainWindow : Window
         if (e.Key == Key.Z && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
         {
             Undo_Click(sender, new RoutedEventArgs());
+        }
+    }
+
+    // ============================================================
+    // SETTINGS WINDOW
+    // ============================================================
+
+    /// <summary>
+    /// Opens the Settings window.
+    /// This is where you enable Beta Mode and experimental features!
+    /// </summary>
+    private void Settings_Click(object sender, RoutedEventArgs e)
+    {
+        // Create and show the settings window as a dialog (modal window)
+        // Modal = you can't interact with the main window until you close this one
+        SettingsWindow settingsWindow = new()
+        {
+            Owner = this // Set this window as the parent
+        };
+        settingsWindow.ShowDialog();
+    }
+
+    /// <summary>
+    /// Called when the Save context menu opens.
+    /// Shows/hides the experimental export options based on settings!
+    /// </summary>
+    private void SaveContextMenu_Opened(object sender, RoutedEventArgs e)
+    {
+        // Check if experimental history export is available
+        bool showExperimental = AppSettings.Instance.IsExperimentalHistoryExportAvailable;
+
+        // Show or hide the experimental menu items
+        ExperimentalSeparator.Visibility = showExperimental ? Visibility.Visible : Visibility.Collapsed;
+        ExperimentalPngMenuItem.Visibility = showExperimental ? Visibility.Visible : Visibility.Collapsed;
+        ExperimentalJpgMenuItem.Visibility = showExperimental ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    // ============================================================
+    // EXPERIMENTAL EXPORT WITH HISTORY
+    // ============================================================
+
+    /// <summary>
+    /// Exports as PNG with embedded stroke history! GROUNDBREAKING TECH!
+    /// </summary>
+    private void ExperimentalExportPng_Click(object sender, RoutedEventArgs e)
+    {
+        ExportWithHistory("png");
+    }
+
+    /// <summary>
+    /// Exports as JPG with embedded stroke history! GROUNDBREAKING TECH!
+    /// </summary>
+    private void ExperimentalExportJpg_Click(object sender, RoutedEventArgs e)
+    {
+        ExportWithHistory("jpg");
+    }
+
+    /// <summary>
+    /// The actual export logic for experimental history export.
+    /// This embeds your stroke data INTO the image metadata!
+    /// </summary>
+    private void ExportWithHistory(string format)
+    {
+        // Show an info message about this experimental feature
+        string infoMsg = "🧪 EXPERIMENTAL FEATURE 🧪\n\n" +
+                         "This will export your drawing as a " + format.ToUpper() + " with embedded stroke history!\n\n" +
+                         "What this means:\n" +
+                         "• Your strokes will be saved INSIDE the image metadata\n" +
+                         "• When you open this image in PugNetPaint later, your strokes can be restored!\n" +
+                         "• The image will work normally in other apps too\n\n" +
+                         "⚠️ Note: This may slightly increase file size.\n\n" +
+                         "Continue?";
+
+        if (MessageBox.Show(infoMsg, "Experimental History Export", MessageBoxButton.YesNo, MessageBoxImage.Information) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        SaveFileDialog saveFileDialog = new();
+        if (format == "png")
+            saveFileDialog.Filter = "PNG Image with History (*.png)|*.png";
+        else
+            saveFileDialog.Filter = "JPEG Image with History (*.jpg)|*.jpg";
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            try
+            {
+                if (format == "png")
+                {
+                    HistoryImageExporter.ExportPngWithHistory(MyCanvas, saveFileDialog.FileName, MyCanvas.Strokes);
+                }
+                else
+                {
+                    HistoryImageExporter.ExportJpegWithHistory(MyCanvas, saveFileDialog.FileName, MyCanvas.Strokes);
+                }
+
+                MessageBox.Show("✅ Exported successfully with embedded history!\n\n" +
+                               "When you open this image in PugNetPaint, you'll be asked if you want to restore your strokes.",
+                               "Success!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("❌ Export failed: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -91,17 +91,28 @@
                     
                     <Button Content="SAVE" x:Name="SaveBtn" Click="SaveBtn_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
                         <Button.ContextMenu>
-                            <ContextMenu>
+                            <ContextMenu x:Name="SaveContextMenu" Opened="SaveContextMenu_Opened">
                                 <MenuItem Header="Save Project (.isf) - Editable" Click="SaveProject_Click"/>
                                 <Separator/>
                                 <MenuItem Header="Export as PNG" Click="ExportPng_Click"/>
                                 <MenuItem Header="Export as JPG" Click="ExportJpg_Click"/>
+                                <Separator x:Name="ExperimentalSeparator" Visibility="Collapsed"/>
+                                <MenuItem x:Name="ExperimentalPngMenuItem" Header="🧪 Export PNG with History (BETA)" Click="ExperimentalExportPng_Click" Visibility="Collapsed"/>
+                                <MenuItem x:Name="ExperimentalJpgMenuItem" Header="🧪 Export JPG with History (BETA)" Click="ExperimentalExportJpg_Click" Visibility="Collapsed"/>
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
 
                     <Button Content="OPEN" Click="Open_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     <Button Content="PRINT" Click="Print_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
+                    <Separator Width="15" Background="Transparent"/>
+                    <Button Content="⚙️" x:Name="SettingsBtn" Click="Settings_Click" Padding="10,5" Margin="2" Background="#555" Foreground="White" FontSize="16" BorderThickness="0" ToolTip="Settings">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </StackPanel>
 
             </StackPanel>
