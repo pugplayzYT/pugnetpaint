@@ -47,10 +47,10 @@ public partial class MainWindow : Window
     {
         // 1. Get Start and End Points of the new stroke
         // We clone the points to a new collection to ensure UI updates when we re-assign
-        StylusPointCollection modifiedPoints = new StylusPointCollection(newStroke.StylusPoints);
+        StylusPointCollection modifiedPoints = new(newStroke.StylusPoints);
 
         StylusPoint startPoint = modifiedPoints[0];
-        StylusPoint endPoint = modifiedPoints[modifiedPoints.Count - 1];
+        StylusPoint endPoint = modifiedPoints[^1];
 
         // 2. Define Threshold (Snap Distance) - from Slider
         double threshold = SnapSlider.Value;
@@ -69,7 +69,7 @@ public partial class MainWindow : Window
 
             // Check against start/end of other strokes (End-to-End Snapping)
             StylusPoint sStart = s.StylusPoints[0];
-            StylusPoint sEnd = s.StylusPoints[s.StylusPoints.Count - 1];
+            StylusPoint sEnd = s.StylusPoints[^1];
 
             // Check Start of New Stroke
             double dStart1 = GetDistance(startPoint, sStart);
@@ -95,7 +95,7 @@ public partial class MainWindow : Window
         }
         if (bestEndMatch.HasValue)
         {
-            modifiedPoints[modifiedPoints.Count - 1] = bestEndMatch.Value;
+            modifiedPoints[^1] = bestEndMatch.Value;
             changed = true;
         }
 
@@ -105,7 +105,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private double GetDistance(StylusPoint p1, StylusPoint p2)
+    private static double GetDistance(StylusPoint p1, StylusPoint p2)
     {
         return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
     }
@@ -197,55 +197,51 @@ public partial class MainWindow : Window
             }
         }
 
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        SaveFileDialog saveFileDialog = new();
         if (format == "isf") saveFileDialog.Filter = "Ink Serialized Format (*.isf)|*.isf";
         else if (format == "png") saveFileDialog.Filter = "PNG Image (*.png)|*.png";
         else if (format == "jpg") saveFileDialog.Filter = "JPEG Image (*.jpg)|*.jpg";
 
         if (saveFileDialog.ShowDialog() == true)
         {
-            using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
+            using FileStream fs = new(saveFileDialog.FileName, FileMode.Create);
+            if (format == "isf")
             {
-                if (format == "isf")
+                MyCanvas.Strokes.Save(fs);
+            }
+            else
+            {
+                // Render the canvas to a bitmap
+                Rect bounds = VisualTreeHelper.GetDescendantBounds(MyCanvas);
+                double dpi = 96d;
+                RenderTargetBitmap rtb = new((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+
+                DrawingVisual dv = new();
+                using (DrawingContext dc = dv.RenderOpen())
                 {
-                    MyCanvas.Strokes.Save(fs);
+                    VisualBrush vb = new(MyCanvas);
+                    dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
                 }
-                else
-                {
-                    // Render the canvas to a bitmap
-                    Rect bounds = VisualTreeHelper.GetDescendantBounds(MyCanvas);
-                    double dpi = 96d;
-                    RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+                rtb.Render(dv);
 
-                    DrawingVisual dv = new DrawingVisual();
-                    using (DrawingContext dc = dv.RenderOpen())
-                    {
-                        VisualBrush vb = new VisualBrush(MyCanvas);
-                        dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
-                    }
-                    rtb.Render(dv);
+                BitmapEncoder encoder = format == "png" ? new PngBitmapEncoder() : new JpegBitmapEncoder();
 
-                    BitmapEncoder encoder = null;
-                    if (format == "png") encoder = new PngBitmapEncoder();
-                    else encoder = new JpegBitmapEncoder();
-
-                    encoder.Frames.Add(BitmapFrame.Create(rtb));
-                    encoder.Save(fs);
-                }
+                encoder.Frames.Add(BitmapFrame.Create(rtb));
+                encoder.Save(fs);
             }
         }
     }
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Filter = "Ink Serialized Format (*.isf)|*.isf";
+        SaveFileDialog saveFileDialog = new()
+        {
+            Filter = "Ink Serialized Format (*.isf)|*.isf"
+        };
         if (saveFileDialog.ShowDialog() == true)
         {
-            using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
-            {
-                MyCanvas.Strokes.Save(fs);
-            }
+            using FileStream fs = new(saveFileDialog.FileName, FileMode.Create);
+            MyCanvas.Strokes.Save(fs);
         }
     }
 
@@ -271,9 +267,11 @@ public partial class MainWindow : Window
                 else
                 {
                     // Standard image formats
-                    ImageBrush img = new ImageBrush();
-                    img.ImageSource = new BitmapImage(new Uri(file, UriKind.Absolute));
-                    img.Stretch = Stretch.Uniform;
+                    ImageBrush img = new()
+                    {
+                        ImageSource = new BitmapImage(new Uri(file, UriKind.Absolute)),
+                        Stretch = Stretch.Uniform
+                    };
                     MyCanvas.Background = img;
                 }
             }

@@ -59,7 +59,7 @@
                 <!-- Brush Size Group -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="BRUSH" Foreground="#aaaaaa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <Slider Name="SizeSlider" Minimum="1" Maximum="10" Value="2" Width="120" VerticalAlignment="Center" ValueChanged="Size_Changed" IsSnapToTickEnabled="True" TickFrequency="1"/>
+                    <Slider x:Name="SizeSlider" Minimum="1" Maximum="10" Value="2" Width="120" VerticalAlignment="Center" ValueChanged="Size_Changed" IsSnapToTickEnabled="True" TickFrequency="1"/>
                     <TextBlock Text="{Binding ElementName=SizeSlider, Path=Value}" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0" Width="20"/>
                 </StackPanel>
 
@@ -67,7 +67,7 @@
 
                 <!-- Tools Group -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <ToggleButton Content="SNAP" Name="SnapToggle" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                    <ToggleButton Content="SNAP" x:Name="SnapToggle" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
                          <ToggleButton.Resources>
                            <Style TargetType="Border">
                                <Setter Property="CornerRadius" Value="5"/>
@@ -77,7 +77,7 @@
                     
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0">
                          <TextBlock Text="MAGNET" Foreground="#aaaaaa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                         <Slider Name="SnapSlider" Minimum="10" Maximum="200" Value="50" Width="80" VerticalAlignment="Center" ToolTip="Adjust Snap Strength"/>
+                         <Slider x:Name="SnapSlider" Minimum="10" Maximum="200" Value="50" Width="80" VerticalAlignment="Center" ToolTip="Adjust Snap Strength"/>
                     </StackPanel>
                     <Button Content="UNDO" Click="Undo_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
                        <Button.Resources>
@@ -89,7 +89,7 @@
                     <Button Content="ERASER" Click="Eraser_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     <Button Content="CLEAR" Click="Clear_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0"/>
                     
-                    <Button Content="SAVE" Name="SaveBtn" Click="SaveBtn_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
+                    <Button Content="SAVE" x:Name="SaveBtn" Click="SaveBtn_Click" Padding="15,5" Margin="2" Background="#444" Foreground="White" FontWeight="Bold" BorderThickness="0">
                         <Button.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Save Project (.isf) - Editable" Click="SaveProject_Click"/>
@@ -112,7 +112,7 @@
             <Border.Effect>
                 <DropShadowEffect Color="Black" Direction="320" ShadowDepth="5" Opacity="0.5" BlurRadius="10"/>
             </Border.Effect>
-             <InkCanvas Name="MyCanvas" Background="Transparent"/>
+             <InkCanvas x:Name="MyCanvas" Background="Transparent"/>
         </Border>
     </Grid>
 </Window>
